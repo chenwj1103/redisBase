@@ -3,7 +3,7 @@
 
 ### 2.特点
 *   读写性能：读110000/s  写 80000/s
-*   value支持的类型：String hash list set zset
+*   value支持的类型：string 、hash 、list 、set、 zset  、BitMap、 HyperLogLog 、 geospatial
 *   所有的操作是原子操作
 *   支持数据库的备份，支持主从备份（master-slave）
 *   支持订阅发布、通知以及key过期等特性
