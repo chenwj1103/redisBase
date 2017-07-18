@@ -151,6 +151,31 @@ Hash (size:2的23次方-1的filed-value对,filed和value都是String)
 	4) "27"
 
 11.	HSCAN key cursor [MATCH pattern] [COUNT count]
+    命令用于迭代Hash类型中的键值对。
+    当SCAN命令的游标参数被设置为 0 时， 服务器将开始一次新的迭代， 而当服务器向用户返回值为 0 的游标时， 表示迭代已结束
+    COUNT 参数的默认值为 10 。
+    数据集比较大时，如果没有使用MATCH 选项, 那么命令返回的元素数量通常和 COUNT 选项指定的一样， 或者比 COUNT 选项指定的数量稍多一些。
+
+    返回值：
+    SCAN命令的返回值 是一个包含两个元素的数组， 第一个数组元素是用于进行下一次迭代的新游标， 而第二个数组元素则是一个数组， 这个数组中包含了所有被迭代的元素
+
+    例子：
+    127.0.0.1:6379> hgetall hashkey
+    1) "name"
+    2) "zhuning"
+    3) "age"
+    4) "27"
+    5) "city"
+    6) "beijing"
+    127.0.0.1:6379> hscan hashkey 0  Count 1
+    1) "0"
+    2) 1) "name"
+       2) "zhuning"
+       3) "age"
+       4) "27"
+       5) "city"
+       6) "beijing"
+
 
 12. HSET key field value
 	设置key中hash的filed字段为value，如果不存在hash或者filed 将创建hash和覆盖key
