@@ -1,7 +1,5 @@
 package com.base.dao;
 
-import java.util.Random;
-
 /**
  * Created by Chen Weijie on 2017/7/23.
  */
@@ -12,11 +10,47 @@ public class RedisExample extends RedisClient {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < 5000000; i++) {
-            Random random = new Random(100000000);
-            int num = random.nextInt();
-            String key = "num:" + num;
-            set(key, num+"");
-            System.out.println("key======="+key);
+            double d =Math.random();
+            int num = (int)(d*100000000);
+
+            for (int j=0 ;j<100;j++){
+                num++;
+                String StringKey = "num:" + num;
+                set(StringKey, num+"");
+                System.out.println("StringKey======="+StringKey);
+            }
+
+            for (int j=0 ;j<100;j++){
+                num++;
+                String listKey ="listKey:"+num;
+                lPush(listKey,num+"");
+                System.out.println("listKey======="+listKey);
+            }
+
+            for (int j=0 ;j<100;j++){
+                num++;
+                String mapKey ="mapKey:"+num;
+                hSet(mapKey,"test",num+"");
+                System.out.println("mapKey======="+mapKey);
+            }
+
+
+            for (int j=0 ;j<100;j++){
+                num++;
+                String setKey ="setKey:"+num;
+                sAdd(setKey,num+"");
+                System.out.println("setKey======="+setKey);
+            }
+
+
+            for (int j=0 ;j<100;j++){
+                num++;
+                String zaddKey ="zaddKey:"+num;
+                zAdd(zaddKey,Math.random(),num+"");
+                System.out.println("zaddKey======="+zaddKey);
+            }
+
+
         }
         long end = System.currentTimeMillis();
 
