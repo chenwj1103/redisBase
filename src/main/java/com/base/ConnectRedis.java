@@ -10,9 +10,8 @@ public class ConnectRedis {
 
     public static void main(String[] args) {
 
-        Jedis jedis = new Jedis("127.0.0.1", 6379);
+        Jedis jedis = new Jedis("10.21.7.32", 6379);
         System.out.println("connect success!");
-        jedis.auth("password");
         System.out.println("server is running:" + jedis.ping());
 
     }
