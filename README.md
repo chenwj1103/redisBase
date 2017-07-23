@@ -75,8 +75,8 @@
 	         type的值：(String，hash，list，set，sorted set)
 	         encoding (raw,int,ht,zipmap,linkedlist,ziplist,intset)
     	     vm字段，只有打开了Redis的虚拟内存功能，此字段才会真正的分配内存，该功能默认是关闭状态的
+````
    	String：
-
    	常用命令：
 	set,get,decr,incr,mget 等。
 
@@ -93,8 +93,8 @@
 	应用场景：
 	根据用户id查找用户的姓名，年龄，出生地等信息。
 	存储方式 1：key为id 将他的基本信息存到一个对象后以序列化的方式存储。 序列化发序列化成本高
-			 2：key为id：姓名  key为id：年龄 多个key-value键值对存储。	多个键值对 不好维护
-			 3：采用hash存储
+			2：key为id：姓名  key为id：年龄 多个key-value键值对存储。	多个键值对 不好维护
+			3：采用hash存储
 
 	实现方式：当成员较少时，为了节省内存，value的redisObject采用的encoding是zipmap；当数量增大时自动转为HashMap，此时encoding是ht
 				这个限制可以在配置文件中指定（默认配置在redis根目录下的redis.conf中）
@@ -110,7 +110,9 @@
 
 	实现方式：
 	list的实现为一个双向链表，即可以支持反向查找和遍历。
-	如果redisObject的type成员值是REDIS_LIST类型的，则当该list的元素个数小于配置值list-max-ziplist-entries且元素值字符串的长度小于配置值list-max-ziplist-value则可以编码成 REDIS_ENCODING_ZIPLIST 类型存储，否则采用 Dict 来存储(Dict实际是Hash Table的一种实现，list采用ziplist数据结构存储数据，（默认配置在redis根目录下的redis.conf中）
+	如果redisObject的type成员值是REDIS_LIST类型的，则当该list的元素个数小于配置值list-max-ziplist-entries且元素值字符串的长度
+	小于配置值list-max-ziplist-value则可以编码成 REDIS_ENCODING_ZIPLIST 类型存储，否则采用 Dict 来存储(Dict实际是Hash Table的一种实现，
+	list采用ziplist数据结构存储数据，（默认配置在redis根目录下的redis.conf中）
 
 
 	Set
@@ -120,7 +122,8 @@
 	set类似于list，但可以自动排重。当你需要一个要求元素不能重复的集合是可以使用set
 
 	实现方式：
-	当set集合中的元素为整数且元素个数小于配置set-max-intset-entries值时，使用intset数据结构存储(int16_t类型、int32_t 类型、 int64_t 类型。至于怎么选择是那种类型的数组，是根据其保存的值的取值范围来决定的).否则转化为Dict结构，Dict实际是Hash Table的一种实现
+	当set集合中的元素为整数且元素个数小于配置set-max-intset-entries值时，使用intset数据结构存储(int16_t类型、int32_t 类型、 int64_t 类型。
+	至于怎么选择是那种类型的数组，是根据其保存的值的取值范围来决定的).否则转化为Dict结构，Dict实际是Hash Table的一种实现
 
 
 	Sorted set
@@ -131,9 +134,10 @@
 	当你需要一个有序的并且不重复的集合列表，那么 可以选择sorted set数据结构
 
 	实现方式：
-	Redis sorted set的内部使用HashMap和跳跃表(SkipList)来保证数据的存储和有序，HashMap里放的是成员到score的映射，而跳跃表里存放的 是所有的成员，排序依据是HashMap里存的score,使用跳跃表的结构可以获得比较高的查找效率
+	Redis sorted set的内部使用HashMap和跳跃表(SkipList)来保证数据的存储和有序，HashMap里放的是成员到score的映射，而跳跃表里存放的 是所有的成员，
+	排序依据是HashMap里存的score,使用跳跃表的结构可以获得比较高的查找效率
 
-
+````
 
 
 
