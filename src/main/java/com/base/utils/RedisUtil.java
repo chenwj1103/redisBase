@@ -19,7 +19,7 @@ public class RedisUtil {
     private static final int PORT = 6379;
 
     //访问密码
-    private static final String AUTH = "";
+    private static final String AUTH = "test";
 
     //可用连接实例的最大数目，默认值为8；
     //如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗
@@ -50,7 +50,7 @@ public class RedisUtil {
             config.setMaxIdle(MAX_IDLE);
             config.setMaxWaitMillis(10000);
             config.setTestOnBorrow(TEST_ON_BORROW);
-            jedisPool = new JedisPool(config, ADDR, PORT, TIMEOUT);
+            jedisPool = new JedisPool(config, ADDR, PORT, TIMEOUT,AUTH);
         } catch (Exception e) {
             System.out.println("init RedisUtil failed");
         }
