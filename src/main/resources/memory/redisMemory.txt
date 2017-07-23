@@ -122,7 +122,137 @@ mem_allocator:jemalloc-4.0.3
 
 ````
 
-2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的. see https://redis.io/topics/memory-optimization 弄明白里面每一个参数的意义.例如 hash-max-zipmap-entries 512 写程序来对比内存使用大小.
+2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的. see https://redis.io/topics/memory-optimization
+弄明白里面每一个参数的意义.例如 hash-max-zipmap-entries 512 写程序来对比内存使用大小.
+
+
+#HASH的内存优化实例
+
+1)hash-max-zipmap-entries >512
+  hash-max-zipmap-value >64
+
+````
+    127.0.0.1:6379> dbsize
+    (integer) 498720
+    127.0.0.1:6379> scan 0
+    1) "163840"
+    2)  1) "mapKey:73293890"
+        2) "mapKey:64423927"
+        3) "mapKey:7010940"
+        4) "mapKey:98631431"
+        5) "mapKey:2049735"
+        6) "mapKey:65125853"
+        7) "mapKey:60842228"
+        8) "mapKey:82903244"
+        9) "mapKey:20185661"
+       10) "mapKey:91981620"
+    127.0.0.1:6379> object encoding mapKey:73293890
+    "hashtable"
+    127.0.0.1:6379> info memory
+    # Memory
+    used_memory:2788305992
+    used_memory_human:2.60G
+    used_memory_rss:2865180672
+    used_memory_rss_human:2.67G
+    used_memory_peak:3014519760
+    used_memory_peak_human:2.81G
+    total_system_memory:4143886336
+    total_system_memory_human:3.86G
+    used_memory_lua:37888
+    used_memory_lua_human:37.00K
+    maxmemory:0
+    maxmemory_human:0B
+    maxmemory_policy:noeviction
+    mem_fragmentation_ratio:1.03
+    mem_allocator:jemalloc-4.0.3
+
+
+ 2)hash-max-zipmap-entries <512
+   hash-max-zipmap-value <64
+
+     127.0.0.1:6379> dbsize
+     (integer) 498694
+     127.0.0.1:6379> scan 0
+     1) "32768"
+     2)  1) "mapKey:89856531"
+         2) "mapKey:40601055"
+         3) "mapKey:52155425"
+         4) "mapKey:83622674"
+         5) "mapKey:17020923"
+         6) "mapKey:5148821"
+         7) "mapKey:11712272"
+         8) "mapKey:95316466"
+         9) "mapKey:33847714"
+        10) "mapKey:77469552"
+        11) "mapKey:2098874"
+     127.0.0.1:6379> Object ENCODING  mapKey:89856531
+     "ziplist"
+     127.0.0.1:6379> info Memory
+     # Memory
+     used_memory:377002432
+     used_memory_human:359.54M
+     used_memory_rss:391245824
+     used_memory_rss_human:373.12M
+     used_memory_peak:3014519760
+     used_memory_peak_human:2.81G
+     total_system_memory:4143886336
+     total_system_memory_human:3.86G
+     used_memory_lua:37888
+     used_memory_lua_human:37.00K
+     maxmemory:0
+     maxmemory_human:0B
+     maxmemory_policy:noeviction
+     mem_fragmentation_ratio:1.04
+     mem_allocator:jemalloc-4.0.3
+
+ ````
+
+
+ #List的内存优化实例
+
+1)     list-max-ziplist-entries >512
+       list-max-ziplist-value >64
+````
+   127.0.0.1:6379> dbsize
+   (integer) 492202
+   127.0.0.1:6379> scan 0
+   1) "196608"
+   2)  1) "listKey:77533394"
+       2) "listKey:13417629"
+       3) "listKey:96863048"
+       4) "listKey:47932058"
+       5) "listKey:86145819"
+       6) "listKey:76739577"
+       7) "listKey:94135054"
+       8) "listKey:74655838"
+       9) "listKey:45634837"
+      10) "listKey:22441455"
+      11) "listKey:34325928"
+   127.0.0.1:6379> Object encoding listKey:77533394
+   "quicklist"
+   127.0.0.1:6379> info Memory
+   # Memory
+   used_memory:542886456
+   used_memory_human:517.74M
+   used_memory_rss:561434624
+   used_memory_rss_human:535.43M
+   used_memory_peak:3014519760
+   used_memory_peak_human:2.81G
+   total_system_memory:4143886336
+   total_system_memory_human:3.86G
+   used_memory_lua:37888
+   used_memory_lua_human:37.00K
+   maxmemory:0
+   maxmemory_human:0B
+   maxmemory_policy:noeviction
+   mem_fragmentation_ratio:1.03
+   mem_allocator:jemalloc-4.0.3
+````
+
+2) list-max-ziplist-entries <512
+   list-max-ziplist-value <64
+
+
 
 
 

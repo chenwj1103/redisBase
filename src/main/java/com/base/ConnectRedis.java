@@ -11,6 +11,7 @@ public class ConnectRedis {
     public static void main(String[] args) {
 
         Jedis jedis = new Jedis("10.21.7.32", 6379);
+        jedis.auth("test");
         System.out.println("connect success!");
         System.out.println("server is running:" + jedis.ping());
 
