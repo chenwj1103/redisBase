@@ -99,89 +99,75 @@ mem_fragmentation_ratio:1.03
 mem_allocator:jemalloc-4.0.3
 
 ```
-2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的. see https://redis.io/topics/memory-optimization
-弄明白里面每一个参数的意义.例如 hash-max-zipmap-entries 512 写程序来对比内存使用大小.
+
+2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的.
 
 ```
 #HASH的内存优化实例
 
-1) hash-max-ziplist-entries >512 （1万 entries>512 entries>64）
-   hash-max-ziplist-value  >64 (49万 value>64  entries<512)
+1)条件：
+   hash-max-ziplist-entries  > 512 (520)
+   hash-max-ziplist-value >64(94)
 
-    127.0.0.1:6379> dbsize
-    (integer) 498720
-    127.0.0.1:6379> scan 0
-    1) "163840"
-    2)  1) "mapKey:73293890"
-        2) "mapKey:64423927"
-        3) "mapKey:7010940"
-        4) "mapKey:98631431"
-        5) "mapKey:2049735"
-        6) "mapKey:65125853"
-        7) "mapKey:60842228"
-        8) "mapKey:82903244"
-        9) "mapKey:20185661"
-       10) "mapKey:91981620"
-    127.0.0.1:6379> object encoding mapKey:73293890
-    "hashtable"
-    127.0.0.1:6379> info memory
-    # Memory
-    used_memory:2788305992
-    used_memory_human:2.60G
-    used_memory_rss:2865180672
-    used_memory_rss_human:2.67G
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.03
-    mem_allocator:jemalloc-4.0.3
+   dbsize:  50000
+
+   key :mapKey:953127095
+   filed:test key length ,need length is gt 64 byte.it is too large.redis is a memory database953127396
+   value:test key length ,need length is gt 64 byte.it is too large.redis is a memory database953127396
+
+   used_memory_human:7.34G
+
+   object encoding :hashtable
 
 
- 2)hash-max-ziplist-entries  <512 (50万 entries<512 value<64)
-   hash-max-ziplist-value <64
+2) 条件：
+   hash-max-ziplist-entries  < 512 (100)
+   hash-max-ziplist-value >64(94)
 
-     127.0.0.1:6379> dbsize
-     (integer) 498694
-     127.0.0.1:6379> scan 0
-     1) "32768"
-     2)  1) "mapKey:89856531"
-         2) "mapKey:40601055"
-         3) "mapKey:52155425"
-         4) "mapKey:83622674"
-         5) "mapKey:17020923"
-         6) "mapKey:5148821"
-         7) "mapKey:11712272"
-         8) "mapKey:95316466"
-         9) "mapKey:33847714"
-        10) "mapKey:77469552"
-        11) "mapKey:2098874"
-     127.0.0.1:6379> Object ENCODING  mapKey:89856531
-     "ziplist"
-     127.0.0.1:6379> info Memory
-     # Memory
-     used_memory:377002432
-     used_memory_human:359.54M
-     used_memory_rss:391245824
-     used_memory_rss_human:373.12M
-     used_memory_peak:3014519760
-     used_memory_peak_human:2.81G
-     total_system_memory:4143886336
-     total_system_memory_human:3.86G
-     used_memory_lua:37888
-     used_memory_lua_human:37.00K
-     maxmemory:0
-     maxmemory_human:0B
-     maxmemory_policy:noeviction
-     mem_fragmentation_ratio:1.04
-     mem_allocator:jemalloc-4.0.3
+   dbsize:  50000
+
+   key :mapKey:76759998
+   filed:test key length ,need length is gt 64 byte.it is too large.redis is a memory database76760094
+   value:test key length ,need length is gt 64 byte.it is too large.redis is a memory database76760094
+
+   used_memory_human:1.38G
+
+   object encoding :hashtable
 
 
+
+3) 条件：
+   hash-max-ziplist-entries  > 512 (520)
+   hash-max-ziplist-value <64(9)
+
+   dbsize:   49998
+
+   key :mapKey:637548412
+   filed:637548795
+   value:637548795
+
+   used_memory_human:1.95G
+
+   object encoding :hashtable
+
+
+4) 条件：
+   hash-max-ziplist-entries  < 512 (511)
+   hash-max-ziplist-value <64(63)
+
+   dbsize:   49999
+
+   key :mapKey:998270040
+   filed:998270083
+   value:998270083
+
+   used_memory_human:65.29M
+
+   object encoding :ziplist
+
+总结：
+
+```
 
 
  List的内存优化实例

@@ -5,24 +5,11 @@ package com.base.dao;
  */
 public class RedisSetTest extends RedisClient {
 
-//    set-max-intset-entries >512
+//    set-max-intset-entries >512(520)
     public static void test() {
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 490000; i++) {
-            double d = Math.random();
-            int num = (int) (d * 100000000);
-
-            String setKey = "setKey:" + num;
-
-            for (int j = 0; j < 520; j++) {
-                num++;
-                sAdd(setKey,num+"");
-            }
-            System.out.println("setKey=======" + setKey);
-        }
-
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 50000; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
 
@@ -41,7 +28,7 @@ public class RedisSetTest extends RedisClient {
     }
 
 
-    //    set-max-intset-entries <512
+    //    set-max-intset-entries <512(500)
     public static void test2() {
 
         long start = System.currentTimeMillis();
@@ -51,20 +38,7 @@ public class RedisSetTest extends RedisClient {
 
             String setKey = "setKey:" + num;
 
-            for (int j = 0; j < 2; j++) {
-                num++;
-                sAdd(setKey,num+"");
-            }
-            System.out.println("setKey=======" + setKey);
-        }
-
-        for (int i = 0; i < 100000; i++) {
-            double d = Math.random();
-            int num = (int) (d * 100000000);
-
-            String setKey = "setKey:" + num;
-
-            for (int j = 0; j < 2; j++) {
+            for (int j = 0; j < 500; j++) {
                 num++;
                 sAdd(setKey,num+"");
             }

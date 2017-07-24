@@ -7,7 +7,7 @@ public class TestMemory {
     public static void main(String[] args) {
 
 
-        String str="testKeyLength++mapKey测试占用内存空间大小，字节长度时71";
+        String str="test key length ,need length is gt 64 byte.it is to";
 
         System.out.println(str.getBytes().length);
 
