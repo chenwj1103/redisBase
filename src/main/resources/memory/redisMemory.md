@@ -1,12 +1,13 @@
 
 
-# 基于redis-3.2.9版本的默认配置文件
+### 基于redis-3.2.9版本的默认配置文件
 
 1. 比较key值长和短的内存区别.
-````
+
+```
 存500万数据的情况（key值较短）
 
-127.0.0.1:6379> dbsize 
+127.0.0.1:6379> dbsize
 (integer) 4974516
 127.0.0.1:6379> scan 0 COUNT 20
 1) "131072"
@@ -122,18 +123,16 @@ maxmemory_policy:noeviction
 mem_fragmentation_ratio:1.03
 mem_allocator:jemalloc-4.0.3
 
-````
-
+```
 2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的. see https://redis.io/topics/memory-optimization
 弄明白里面每一个参数的意义.例如 hash-max-zipmap-entries 512 写程序来对比内存使用大小.
 
-
+```
 #HASH的内存优化实例
 
-1)
-    hash-max-ziplist-entries >512 （1万 entries>512 entries>64）
-    hash-max-ziplist-value  >64 (49万 value>64  entries<512)
-````
+1) hash-max-ziplist-entries >512 （1万 entries>512 entries>64）
+   hash-max-ziplist-value  >64 (49万 value>64  entries<512)
+
     127.0.0.1:6379> dbsize
     (integer) 498720
     127.0.0.1:6379> scan 0
@@ -207,10 +206,10 @@ mem_allocator:jemalloc-4.0.3
      mem_fragmentation_ratio:1.04
      mem_allocator:jemalloc-4.0.3
 
- ````
 
 
- #List的内存优化实例
+
+ List的内存优化实例
 
 1)    list-max-ziplist-size  -2
       list-compress-depth 0
@@ -224,7 +223,7 @@ mem_allocator:jemalloc-4.0.3
       #    So: [head]->node->node->...->node->[tail]
       #    [head], [tail] will always be uncompressed; inner nodes will compress.
 
-````
+
    127.0.0.1:6379> dbsize
    (integer) 492202
    127.0.0.1:6379> scan 0
@@ -300,11 +299,11 @@ mem_allocator:jemalloc-4.0.3
     127.0.0.1:6379> object encoding listKey:1283729
     "quicklist"
 
-````
 
 
- #Set的内存优化实例
- ````
+
+Set的内存优化实例
+
 1)set-max-intset-entries >512  (1万个>512 49万个<512)
 
     127.0.0.1:6379> dbsize
@@ -370,9 +369,8 @@ mem_allocator:jemalloc-4.0.3
     mem_fragmentation_ratio:1.21
     mem_allocator:jemalloc-4.0.3
 
- #Set的内存优化实例
+zSet的内存优化实例
 
- ````
  1)zset-max-ziplist-entries  >128 （8.1万  entries>128 ,value>64）
    zset-max-ziplist-value >64
 
@@ -465,13 +463,13 @@ mem_allocator:jemalloc-4.0.3
 
 
 
- ````
+ ```
 
 
-# 存储　id -> v1, v2 其中 v1和v2是随机的int64.第一种，只是简单的string存储，第二种，把v1,v2以base64等或者类似机制转为二进制字符串存储.
+存储　id -> v1, v2 其中 v1和v2是随机的int64.第一种，只是简单的string存储，第二种，把v1,v2以base64等或者类似机制转为二进制字符串存储.
 
-# v1和v2是随机的int64
-````
+```
+v1和v2是随机的int64
     127.0.0.1:6379> dbsize
     (integer) 498696
     127.0.0.1:6379> scan 0
@@ -511,7 +509,7 @@ mem_allocator:jemalloc-4.0.3
     mem_allocator:jemalloc-4.0.3
 
 
-  二进制的字符串
+二进制的字符串
     127.0.0.1:6379> dbsize
     (integer) 498762
     127.0.0.1:6379> scan 0
@@ -551,10 +549,10 @@ mem_allocator:jemalloc-4.0.3
     127.0.0.1:6379> get longKey:52447371
     "11001000000100100010001011"
 
-    字符串对象保存各类型值的编码方式
 
-    可以用 long 类型保存的整数。	int
-    可以用 long double 类型保存的浮点数。	embstr 或者 raw （并且这个字符串值的长度大于 39 字节 使用raw）
-    字符串值， 或者因为长度太大而没办法用 long 类型表示的整数， 又或者因为长度太大而没办法用 long double 类型表示的浮点数。	embstr 或者 raw
 
-````
+```
+####字符串对象保存各类型值的编码方式
+1. 可以用 long 类型保存的整数。  |  int
+2. 可以用 long double 类型保存的浮点数。	|embstr 或者 raw  `这个字符串值的长度大于 39 字节 使用raw`
+3. 字符串值， 或者因为长度太大而没办法用 long 类型表示的整数， 又或者因为长度太大而没办法用 long double 类型表示的浮点数。	|embstr 或者 raw
