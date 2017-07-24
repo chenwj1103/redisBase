@@ -9,8 +9,8 @@ import java.util.Map;
 public class RedisHashTest extends RedisClient {
 
 
-//    hash-max-zipmap-entries 520
-//    hash-max-zipmap-value >64
+//    hash-max-ziplist-entries 512
+//    hash-max-ziplist-value 64
     public static void test() {
 
         long start = System.currentTimeMillis();
@@ -21,7 +21,7 @@ public class RedisHashTest extends RedisClient {
             String mapKey = "mapKey:" + num;
             Map<String, String> values = new HashMap<String, String>();
 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 520; j++) {
                 num++;
                 String value = "testKeyLength++mapKey测试占用内存空间大小，字节长度>64:" + num;
                 values.put(value, value);
@@ -53,8 +53,8 @@ public class RedisHashTest extends RedisClient {
 
 
 
-    //    hash-max-zipmap-entries <512
-//    hash-max-zipmap-value <64
+//    hash-max-ziplist-entries <512
+//    hash-max-ziplist-value <64
     public static void test2() {
 
         long start = System.currentTimeMillis();
@@ -100,7 +100,7 @@ public class RedisHashTest extends RedisClient {
 
 
     public static void main(String[] args) {
-        //test2();
+//        test2();
         test();
     }
 

@@ -34,8 +34,8 @@ public class RedisBinaryTest extends RedisClient {
 
     public static void main(String[] args) {
 
-        test();
-//        testBinary();
+//        test();
+        testBinary();
 
     }
 

@@ -19,7 +19,7 @@ public class RedisListTest extends RedisClient {
 
             String listKey = "listKey:" + num;
 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 520; j++) {
                 num++;
                 String value = "testKeyLength++mapKey测试占用内存空间大小，字节长度>64:" + num;
                 lPush(listKey,value);
@@ -91,8 +91,8 @@ public class RedisListTest extends RedisClient {
 
 
     public static void main(String[] args) {
-        test2();
-//        test();
+//        test2();
+        test();
     }
 
 
