@@ -1,0 +1,23 @@
+
+1. AUTH password
+
+    用户授权，
+    可以通过 config get requirepass 查看是否设置了密码
+    通过使用 config set requirepass 'test' 设置密码
+
+2.  ECHO message
+
+    返回message
+
+3.  PING
+
+    返回pong，该命令经常用于检测连接是否可以用
+
+4.  QUIT
+
+    请求服务器关闭连接。连接将会尽可能快的将未完成的客户端请求完成处理。
+
+5.  SELECT index
+
+    选择一个数据库，下标值从0开始，一个新连接默认连接的数据库是DB0
+
