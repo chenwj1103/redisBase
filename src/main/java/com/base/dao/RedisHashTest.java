@@ -20,7 +20,7 @@ public class RedisHashTest extends RedisClient {
             String mapKey = "mapKey:" + num;
             Map<String, String> values = new HashMap<String, String>();
 
-            for (int j = 0; j < 513; j++) {
+            for (int j = 0; j < 520; j++) {
                 num++;
                 String value = "test key length ,need length is gt 64 byte.it is too large ll" + num;
                 values.put(value, value);
@@ -46,7 +46,7 @@ public class RedisHashTest extends RedisClient {
             String mapKey = "mapKey:" + num;
             Map<String, String> values = new HashMap<String, String>();
 
-            for (int j = 0; j < 511; j++) {
+            for (int j = 0; j < 500; j++) {
                 num++;
                 String value = "test key length ,need length is gt 64 byte.it is too large ll" + num;
                 values.put(value, value);

@@ -9,7 +9,7 @@ public class RedisSetTest extends RedisClient {
     public static void test() {
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 200; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
 
@@ -17,7 +17,7 @@ public class RedisSetTest extends RedisClient {
 
             for (int j = 0; j < 520; j++) {
                 num++;
-                sAdd(setKey,num+"");
+                sAdd(setKey,num+"t");
             }
             System.out.println("setKey=======" + setKey);
         }
@@ -32,7 +32,7 @@ public class RedisSetTest extends RedisClient {
     public static void test2() {
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 400000; i++) {
+        for (int i = 0; i < 200; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
 
@@ -40,7 +40,7 @@ public class RedisSetTest extends RedisClient {
 
             for (int j = 0; j < 500; j++) {
                 num++;
-                sAdd(setKey,num+"");
+                sAdd(setKey,num+"t");
             }
             System.out.println("setKey=======" + setKey);
         }
@@ -52,8 +52,8 @@ public class RedisSetTest extends RedisClient {
 
 
     public static void main(String[] args) {
-//        test2();
-        test();
+        test2();
+//        test();
     }
 
 

@@ -107,30 +107,37 @@ mem_allocator:jemalloc-4.0.3
 
 1)条件：
    hash-max-ziplist-entries  > 512 (520)
-   hash-max-ziplist-value >64(94)
+   hash-max-ziplist-value >64(70)
 
-   dbsize:  50000
+   dbsize:  49998
 
-   key :mapKey:953127095
-   filed:test key length ,need length is gt 64 byte.it is too large.redis is a memory database953127396
-   value:test key length ,need length is gt 64 byte.it is too large.redis is a memory database953127396
+   key :mapKey:688631424
+   filed:test key length ,need length is gt 64 byte.it is too large ll688631876
+   value:test key length ,need length is gt 64 byte.it is too large ll688631876
 
-   used_memory_human:7.34G
+   127.0.0.1:6379> hlen mapKey:688631424
+   (integer) 520
+
+
+   used_memory_human:5.81G
 
    object encoding :hashtable
 
 
 2) 条件：
-   hash-max-ziplist-entries  < 512 (100)
-   hash-max-ziplist-value >64(94)
+   hash-max-ziplist-entries  < 512 (500)
+   hash-max-ziplist-value >64(70)
 
    dbsize:  50000
 
-   key :mapKey:76759998
-   filed:test key length ,need length is gt 64 byte.it is too large.redis is a memory database76760094
-   value:test key length ,need length is gt 64 byte.it is too large.redis is a memory database76760094
+   key :mapKey:887468809
+   filed:test key length ,need length is gt 64 byte.it is too large ll887469058
+   value:test key length ,need length is gt 64 byte.it is too large ll887469058
 
-   used_memory_human:1.38G
+   127.0.0.1:6379> hlen mapKey:887468809
+   (integer) 500
+
+   used_memory_human:5.23G
 
    object encoding :hashtable
 
@@ -138,30 +145,36 @@ mem_allocator:jemalloc-4.0.3
 
 3) 条件：
    hash-max-ziplist-entries  > 512 (520)
-   hash-max-ziplist-value <64(9)
+   hash-max-ziplist-value <64(60)
 
    dbsize:   49998
 
-   key :mapKey:637548412
-   filed:637548795
-   value:637548795
+   key :mapKey:117573535
+   filed:test key length ,need length is gt 64 byte.it is to117573833
+   value:test key length ,need length is gt 64 byte.it is to117573833
 
-   used_memory_human:1.95G
+    127.0.0.1:6379> hlen mapKey:117573535
+    (integer) 520
+
+   used_memory_human:3.40G
 
    object encoding :hashtable
 
 
 4) 条件：
-   hash-max-ziplist-entries  < 512 (511)
-   hash-max-ziplist-value <64(63)
+   hash-max-ziplist-entries  < 512 (500)
+   hash-max-ziplist-value <64(60)
 
    dbsize:   49999
 
-   key :mapKey:998270040
-   filed:998270083
-   value:998270083
+   key :mapKey:524737234
+   filed:test key length ,need length is gt 64 byte.it is to524737494
+   value:test key length ,need length is gt 64 byte.it is to524737494
 
-   used_memory_human:65.29M
+   127.0.0.1:6379> hlen mapKey:524737234
+   (integer) 500
+
+   used_memory_human:3.06G
 
    object encoding :ziplist
 
@@ -172,9 +185,10 @@ mem_allocator:jemalloc-4.0.3
 
  List的内存优化实例
 
-1)    list-max-ziplist-size  -2
+    list-max-ziplist-size  -2
       list-compress-depth 0
 
+      The number of entries allowed
       # -2: max size: 8 Kb   <-- good
       # -1: max size: 4 Kb   <-- good
 
@@ -185,242 +199,184 @@ mem_allocator:jemalloc-4.0.3
       #    [head], [tail] will always be uncompressed; inner nodes will compress.
 
 
-   127.0.0.1:6379> dbsize
-   (integer) 492202
-   127.0.0.1:6379> scan 0
-   1) "196608"
-   2)  1) "listKey:77533394"
-       2) "listKey:13417629"
-       3) "listKey:96863048"
-       4) "listKey:47932058"
-       5) "listKey:86145819"
-       6) "listKey:76739577"
-       7) "listKey:94135054"
-       8) "listKey:74655838"
-       9) "listKey:45634837"
-      10) "listKey:22441455"
-      11) "listKey:34325928"
-   127.0.0.1:6379> Object encoding listKey:77533394
-   "hashtable"
-   127.0.0.1:6379> info Memory
-   # Memory
-   used_memory:542886456
-   used_memory_human:517.74M
-   used_memory_rss:561434624
-   used_memory_rss_human:535.43M
-   used_memory_peak:3014519760
-   used_memory_peak_human:2.81G
-   total_system_memory:4143886336
-   total_system_memory_human:3.86G
-   used_memory_lua:37888
-   used_memory_lua_human:37.00K
-   maxmemory:0
-   maxmemory_human:0B
-   maxmemory_policy:noeviction
-   mem_fragmentation_ratio:1.03
-   mem_allocator:jemalloc-4.0.3
+  1) 条件：
 
 
-2) list-max-ziplist-entries <512
-   list-max-ziplist-value <64  (全部数据  entries <512  value <64)
+    list-compress-depth 0
+    list-max-ziplist-size  -2
 
-    127.0.0.1:6379> DBSIZE
-    (integer) 502843
-    127.0.0.1:6379>
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:93728248
-    used_memory_human:89.39M
-    used_memory_rss:107859968
-    used_memory_rss_human:102.86M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.15
-    mem_allocator:jemalloc-4.0.3
-    127.0.0.1:6379>  scan 0
-    1) "294912"
-    2)  1) "listKey:1283729"
-        2) "listKey:66127017"
-        3) "listKey:56998857"
-        4) "listKey:12259435"
-        5) "listKey:21866672"
-        6) "listKey:2338803"
-        7) "listKey:23134138"
-        8) "listKey:3850645"
-        9) "listKey:36345483"
-       10) "listKey:80173708"
-       11) "listKey:48060181"
-    127.0.0.1:6379> object encoding listKey:1283729
-    "quicklist"
+     dbsize:   49999
+
+     key :mapKey:524737234
+
+
+     127.0.0.1:6379> hlen mapKey:524737234
+     (integer) 500
+
+     used_memory_human:3.06G
+
+     object encoding :ziplist
+
+
+2) 条件：
+
+    list-compress-depth 1
+
+  list-max-ziplist-size  -2
+     dbsize:   49999
+
+     key :mapKey:524737234
+
+
+     127.0.0.1:6379> hlen mapKey:524737234
+     (integer) 500
+
+     used_memory_human:3.06G
+
+     object encoding :ziplist
 
 
 
+3) 条件：
 
-Set的内存优化实例
+        list-max-ziplist-size  -2
+        list-compress-depth 1
 
-1)set-max-intset-entries >512  (1万个>512 49万个<512)
+         dbsize:   49999
 
-    127.0.0.1:6379> dbsize
-    (integer) 489636
-    127.0.0.1:6379> scard setKey:81890650
-    (integer) 520
-    127.0.0.1:6379> object encoding setKey:81890650
-    "hashtable"
-    127.0.0.1:6379> scard setKey:72899004
-    (integer) 10
-    127.0.0.1:6379> object encoding setKey:72899004
-    "intset"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:83719328
-    used_memory_human:79.84M
-    used_memory_rss:94388224
-    used_memory_rss_human:90.02M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.13
-    mem_allocator:jemalloc-4.0.3
+         key :mapKey:524737234
 
-2)set-max-intset-entries <512  (50万个<512)
-    127.0.0.1:6379> dbsize
-    (integer) 498793
-    127.0.0.1:6379> scan 0
-    1) "425984"
-    2)  1) "setKey:89186665"
-        2) "setKey:25990168"
-        3) "setKey:30376790"
-        4) "setKey:56297937"
-        5) "setKey:12719381"
-        6) "setKey:30075705"
-        7) "setKey:60013765"
-        8) "setKey:99466138"
-        9) "setKey:52754745"
-       10) "setKey:39037357"
-    127.0.0.1:6379> object encoding setKey:89186665
-    "intset"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:44522800
-    used_memory_human:42.46M
-    used_memory_rss:53714944
-    used_memory_rss_human:51.23M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.21
-    mem_allocator:jemalloc-4.0.3
+
+         127.0.0.1:6379> hlen mapKey:524737234
+         (integer) 500
+
+         used_memory_human:3.06G
+
+         object encoding :ziplist
+
+
+
+Set的内存优化实例()
+
+1)set-max-intset-entries >512  (520) 存储的数据是包含符号位 64位的10进制的整数类型的字符串
+
+     dbsize:   200
+
+     key :setKey:20444404
+     127.0.0.1:6379> scard setKey:20444404
+     (integer) 520
+     used_memory_human:6.40M
+     object encoding :hashtable
+
+2)set-max-intset-entries <512  (500)
+
+     dbsize:   200
+     key :setKey:50383508
+     127.0.0.1:6379> scard setKey:50383508
+     (integer) 500
+
+     used_memory_human:1.22M
+
+     object encoding :intset
+
+3)set-max-intset-entries >512  (520)  存的是字符串加了一个t
+
+     dbsize:   200
+
+     key :setKey:85731004
+     127.0.0.1:6379> scard setKey:85731004
+     (integer) 520
+     used_memory_human:8.74M
+     object encoding :hashtable
+
+
+
+4)set-max-intset-entries >512  (520)  存的是字符串加了一个t
+
+     dbsize:   200
+
+     key :setKey:86662222
+     127.0.0.1:6379> scard setKey:86662222
+     (integer) 500
+     used_memory_human:6.98M
+     object encoding :hashtable
+
+
+
 
 zSet的内存优化实例
 
- 1)zset-max-ziplist-entries  >128 （8.1万  entries>128 ,value>64）
-   zset-max-ziplist-value >64
+ 1)    zset-max-ziplist-entries  >128 （130）
+       zset-max-ziplist-value >64 （70）
 
-    127.0.0.1:6379> dbsize
-    (integer) 81608
-    127.0.0.1:6379> SCAN 0
-    1) "90112"
-    2)  1) "zaddKey:72827837"
-        2) "zaddKey:51634483"
-        3) "zaddKey:62234560"
-        4) "zaddKey:16367616"
-        5) "zaddKey:8308892"
-        6) "zaddKey:36558983"
-        7) "zaddKey:36733832"
-        8) "zaddKey:57353685"
-        9) "zaddKey:40624942"
-       10) "zaddKey:50445470"
-    127.0.0.1:6379> object encoding zaddKey:72827837
-    "skiplist"
-    127.0.0.1:6379> zcard  zaddKey:72827837
+
+   dbsize:   1000
+
+   key :zaddKey:4158812
+
+   member:test key length ,need length is gt 64 byte.it is too large ll4158923
+   score:0.023705493968210201
+
+    127.0.0.1:6379> zcard zaddKey:4158812
     (integer) 130
-    127.0.0.1:6379> zrange  zaddKey:72827837 0 3 withscores
-    1) "72827927testKeyLength++zaddKey\xe6\xb5\x8b\xe8\xaf\x95\xe5\x8d\xa0\xe7\x94\xa8\xe5\x86\x85\xe5\xad\x98\xe7\xa9\xba\xe9\x97\xb4\xe5\xa4\xa7\xe5\xb0\x8f\xef\xbc\x8c\xe5\xad\x97\xe8\x8a\x82\xe9\x95\xbf\xe5\xba\xa6"
-    2) "0.0018567401032645314"
-    3) "72827848testKeyLength++zaddKey\xe6\xb5\x8b\xe8\xaf\x95\xe5\x8d\xa0\xe7\x94\xa8\xe5\x86\x85\xe5\xad\x98\xe7\xa9\xba\xe9\x97\xb4\xe5\xa4\xa7\xe5\xb0\x8f\xef\xbc\x8c\xe5\xad\x97\xe8\x8a\x82\xe9\x95\xbf\xe5\xba\xa6"
-    4) "0.004352924525922397"
-    5) "72827889testKeyLength++zaddKey\xe6\xb5\x8b\xe8\xaf\x95\xe5\x8d\xa0\xe7\x94\xa8\xe5\x86\x85\xe5\xad\x98\xe7\xa9\xba\xe9\x97\xb4\xe5\xa4\xa7\xe5\xb0\x8f\xef\xbc\x8c\xe5\xad\x97\xe8\x8a\x82\xe9\x95\xbf\xe5\xba\xa6"
-    6) "0.030811260549635233"
-    7) "72827843testKeyLength++zaddKey\xe6\xb5\x8b\xe8\xaf\x95\xe5\x8d\xa0\xe7\x94\xa8\xe5\x86\x85\xe5\xad\x98\xe7\xa9\xba\xe9\x97\xb4\xe5\xa4\xa7\xe5\xb0\x8f\xef\xbc\x8c\xe5\xad\x97\xe8\x8a\x82\xe9\x95\xbf\xe5\xba\xa6"
-    8) "0.034050642587689417"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:2057049848
-    used_memory_human:1.92G
-    used_memory_rss:2114818048
-    used_memory_rss_human:1.97G
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.03
-    mem_allocator:jemalloc-4.0.3
+
+   used_memory_human:25.12M
+
+   object encoding :skiplist
 
 
- 2)zset-max-ziplist-entries  <128 （8.1万  entries<128 ,value<64）
-   zset-max-ziplist-value <64
-    127.0.0.1:6379> dbsize
-    (integer) 80868
-    127.0.0.1:6379> scan 0
-    1) "102400"
-    2)  1) "zaddKey:75353794"
-        2) "zaddKey:96759618"
-        3) "zaddKey:20221988"
-        4) "zaddKey:7352777"
-        5) "zaddKey:55194582"
-        6) "zaddKey:37534671"
-        7) "zaddKey:65221063"
-        8) "zaddKey:98939557"
-        9) "zaddKey:40196902"
-       10) "zaddKey:81951734"
-    127.0.0.1:6379> object encoding zaddKey:75353794
-    "ziplist"
-    127.0.0.1:6379> zrange zaddKey:75353794 0 -1 withscores
-    1) "75353795"
-    2) "0.22051296878932347"
-    3) "75353796"
-    4) "0.79986477041725113"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:13214824
-    used_memory_human:12.60M
-    used_memory_rss:20992000
-    used_memory_rss_human:20.02M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.59
-    mem_allocator:jemalloc-4.0.3
+2)    zset-max-ziplist-entries  <128 （120）
+      zset-max-ziplist-value >64 （70）
+
+       dbsize:   1000
+
+       key :zaddKey:83824178
+
+       member:test key length ,need length is gt 64 byte.it is too large ll83824238
+       score:0.0054909356620924665
+
+        127.0.0.1:6379> zcard zaddKey:83824178
+        (integer) 120
+
+       used_memory_human:21.58M
+
+       object encoding :skiplist
+
+
+3)   zset-max-ziplist-entries  >128 （130）
+     zset-max-ziplist-value <64 （60）
+
+       dbsize:   1000
+
+       key :zaddKey:21401026
+
+       member:test key length ,need length is gt 64 byte.it is to21401073
+       score:0.0075969902614139162
+
+        127.0.0.1:6379> zcard zaddKey:4158812
+        (integer) 130
+
+       used_memory_human:23.14M
+
+       object encoding :skiplist
+
+
+4)  zset-max-ziplist-entries  <128 （120）
+    zset-max-ziplist-value <64 （60）
+
+       dbsize:   1000
+
+       key :zaddKey:51080267
+
+       member:test key length ,need length is gt 64 byte.it is to51080298
+       score:0.0082274075888735254
+
+        127.0.0.1:6379> zcard zaddKey:51080267
+        (integer) 120
+
+       used_memory_human:10.65M
+
+       object encoding :ziplist
 
 
 

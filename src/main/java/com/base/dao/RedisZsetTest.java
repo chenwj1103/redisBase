@@ -10,7 +10,7 @@ public class RedisZsetTest extends RedisClient {
 
     public  static void test1() {
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 1000; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
             String zaddKey = "zaddKey:" + num;
@@ -29,7 +29,7 @@ public class RedisZsetTest extends RedisClient {
 
     public  static void test2() {
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 1000; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
             String zaddKey = "zaddKey:" + num;
@@ -47,7 +47,7 @@ public class RedisZsetTest extends RedisClient {
 
     public  static void test3() {
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 1000; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
             String zaddKey = "zaddKey:" + num;
@@ -66,7 +66,7 @@ public class RedisZsetTest extends RedisClient {
 
     public  static void test4() {
 
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 1000; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
             String zaddKey = "zaddKey:" + num;
@@ -84,7 +84,6 @@ public class RedisZsetTest extends RedisClient {
     public static void main(String[] args) {
 
        test4();
-//        test2();
     }
 
 
