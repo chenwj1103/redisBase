@@ -8,17 +8,20 @@ public class RedisListTest extends RedisClient {
 
 
 
+//    list-max-ziplist-size -2
+//    # -2: max size: 8 Kb   <-- good (70*115=8050)
+//    # -1: max size: 4 Kb   <-- good
 //    list-compress-depth 0
     public static void test1() {
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 1; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
 
             String listKey = "listKey:" + num;
 
-            for (int j = 0; j < 8001; j++) {
+            for (int j = 0; j < 1000; j++) {
                 num++;
                 String value = "test key length ,need length is gt 64 byte.it is too large ll" + num;
                 lPush(listKey,value);
@@ -31,18 +34,20 @@ public class RedisListTest extends RedisClient {
 
     }
 
-
-    //    list-compress-depth 1
+//    list-max-ziplist-size -2
+//    # -2: max size: 8 Kb   <-- good(70*110=7700)
+//    # -1: max size: 4 Kb   <-- good
+//    list-compress-depth 0
     public static void test2() {
 
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 50000; i++) {
+        for (int i = 0; i < 100; i++) {
             double d = Math.random();
             int num = (int) (d * 100000000);
 
             String listKey = "listKey:" + num;
 
-            for (int j = 0; j < 8001; j++) {
+            for (int j = 0; j < 2; j++) {
                 num++;
                 String value = "test key length ,need length is gt 64 byte.it is too large ll" + num;
                 lPush(listKey,value);
@@ -62,7 +67,7 @@ public class RedisListTest extends RedisClient {
 
 
     public static void main(String[] args) {
-        test1();
+        test2();
     }
 
 

@@ -98,11 +98,11 @@ maxmemory_policy:noeviction
 mem_fragmentation_ratio:1.03
 mem_allocator:jemalloc-4.0.3
 
-```
+
 
 2.高级一点的数据类型如set, sorted set,hash,他们在数据大小不同的情况下使用的存储结构是不同的.
 
-```
+
 #HASH的内存优化实例
 
 1)条件：
@@ -180,79 +180,47 @@ mem_allocator:jemalloc-4.0.3
 
 总结：
 
-```
 
 
  List的内存优化实例
 
-    list-max-ziplist-size  -2
-      list-compress-depth 0
 
-      The number of entries allowed
-      # -2: max size: 8 Kb   <-- good
-      # -1: max size: 4 Kb   <-- good
+    # Hashes are encoded using a memory efficient data structure when they have a
+    # small number of entries, and the biggest entry does not exceed a given
+    # threshold. These thresholds can be configured using the following directives.
+    hash-max-ziplist-entries 512
+    hash-max-ziplist-value 64
 
-      # 0: disable all list compression
-      # 1: depth 1 means "don't start compressing until after 1 node into the list,
-      #    going from either the head or tail"
-      #    So: [head]->node->node->...->node->[tail]
-      #    [head], [tail] will always be uncompressed; inner nodes will compress.
+    # Lists are also encoded in a special way to save a lot of space.
+    # The number of entries allowed per internal list node can be specified
+    # as a fixed maximum size or a maximum number of elements.
+    # For a fixed maximum size, use -5 through -1, meaning:
+    # -5: max size: 64 Kb  <-- not recommended for normal workloads
+    # -4: max size: 32 Kb  <-- not recommended
+    # -3: max size: 16 Kb  <-- probably not recommended
+    # -2: max size: 8 Kb   <-- good
+    # -1: max size: 4 Kb   <-- good
+    # Positive numbers mean store up to _exactly_ that number of elements
+    # per list node.
+    # The highest performing option is usually -2 (8 Kb size) or -1 (4 Kb size),
+    # but if your use case is unique, adjust the settings as necessary.
+    list-max-ziplist-size -2
 
-
-  1) 条件：
-
-
+    # Lists may also be compressed.
+    # Compress depth is the number of quicklist ziplist nodes from *each* side of
+    # the list to *exclude* from compression.  The head and tail of the list
+    # are always uncompressed for fast push/pop operations.  Settings are:
+    # 0: disable all list compression
+    # 1: depth 1 means "don't start compressing until after 1 node into the list,
+    #    going from either the head or tail"
+    #    So: [head]->node->node->...->node->[tail]
+    #    [head], [tail] will always be uncompressed; inner nodes will compress.
+    # 2: [head]->[next]->node->node->...->node->[prev]->[tail]
+    #    2 here means: don't compress head or head->next or tail->prev or tail,
+    #    but compress all nodes between them.
+    # 3: [head]->[next]->[next]->node->node->...->node->[prev]->[prev]->[tail]
+    # etc.
     list-compress-depth 0
-    list-max-ziplist-size  -2
-
-     dbsize:   49999
-
-     key :mapKey:524737234
-
-
-     127.0.0.1:6379> hlen mapKey:524737234
-     (integer) 500
-
-     used_memory_human:3.06G
-
-     object encoding :ziplist
-
-
-2) 条件：
-
-    list-compress-depth 1
-
-  list-max-ziplist-size  -2
-     dbsize:   49999
-
-     key :mapKey:524737234
-
-
-     127.0.0.1:6379> hlen mapKey:524737234
-     (integer) 500
-
-     used_memory_human:3.06G
-
-     object encoding :ziplist
-
-
-
-3) 条件：
-
-        list-max-ziplist-size  -2
-        list-compress-depth 1
-
-         dbsize:   49999
-
-         key :mapKey:524737234
-
-
-         127.0.0.1:6379> hlen mapKey:524737234
-         (integer) 500
-
-         used_memory_human:3.06G
-
-         object encoding :ziplist
 
 
 
@@ -382,93 +350,6 @@ zSet的内存优化实例
 
  ```
 
-
-存储　id -> v1, v2 其中 v1和v2是随机的int64.第一种，只是简单的string存储，第二种，把v1,v2以base64等或者类似机制转为二进制字符串存储.
-
-```
-v1和v2是随机的int64
-    127.0.0.1:6379> dbsize
-    (integer) 498696
-    127.0.0.1:6379> scan 0
-    1) "360448"
-    2)  1) "longKey:69677052"
-        2) "longKey:52327791"
-        3) "longKey:78972825"
-        4) "longKey:52254007"
-        5) "longKey:17822021"
-        6) "longKey:16315400"
-        7) "longKey:57830608"
-        8) "longKey:43967667"
-        9) "longKey:70333777"
-       10) "longKey:94829727"
-       11) "longKey:51608598"
-       12) "longKey:58582819"
-    127.0.0.1:6379> get longKey:69677052
-    "69677052"
-    127.0.0.1:6379> object encoding longKey:69677052
-    "int"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:44874104
-    used_memory_human:42.80M
-    used_memory_rss:53878784
-    used_memory_rss_human:51.38M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.20
-    mem_allocator:jemalloc-4.0.3
-
-
-二进制的字符串
-    127.0.0.1:6379> dbsize
-    (integer) 498762
-    127.0.0.1:6379> scan 0
-    1) "360448"
-    2)  1) "longKey:52447371"
-        2) "longKey:79886333"
-        3) "longKey:70324932"
-        4) "longKey:82925575"
-        5) "longKey:90295967"
-        6) "longKey:51894353"
-        7) "longKey:55784365"
-        8) "longKey:73923241"
-        9) "longKey:48683583"
-       10) "longKey:84544025"
-       11) "longKey:97242179"
-       12) "longKey:36238904"
-       13) "longKey:19017625"
-    127.0.0.1:6379> object encoding longKey:52447371
-    "embstr"
-    127.0.0.1:6379> info Memory
-    # Memory
-    used_memory:52822048
-    used_memory_human:50.38M
-    used_memory_rss:61710336
-    used_memory_rss_human:58.85M
-    used_memory_peak:3014519760
-    used_memory_peak_human:2.81G
-    total_system_memory:4143886336
-    total_system_memory_human:3.86G
-    used_memory_lua:37888
-    used_memory_lua_human:37.00K
-    maxmemory:0
-    maxmemory_human:0B
-    maxmemory_policy:noeviction
-    mem_fragmentation_ratio:1.17
-    mem_allocator:jemalloc-4.0.3
-    127.0.0.1:6379> get longKey:52447371
-    "11001000000100100010001011"
-
-
-
-```
 ####字符串对象保存各类型值的编码方式
 1. 可以用 long 类型保存的整数。  |  int
 2. 可以用 long double 类型保存的浮点数。	|embstr 或者 raw  `这个字符串值的长度大于 39 字节 使用raw`
