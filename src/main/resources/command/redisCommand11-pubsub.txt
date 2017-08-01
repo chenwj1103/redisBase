@@ -1,0 +1,18 @@
+PUB/SUB
+
+1. PUBLISH channel message
+    将信息message发送到指定的channel频道
+
+2. SUBSCRIBE channel [channel ...]
+   订阅给定频道的信息
+   一旦客户端进入订阅状态，客户端只可以接受订阅相关的命令  SUBSCRIBE、PSUBSCRIBE、UNSUBSCRIBE和PUNSUBSCRIBE
+
+3. UNSUBSCRIBE [channel [channel ...]]
+   取消订阅给定的频道，当没有频道被指定，取消先前订阅频道的客户端将接收被取消的频道发来的信息
+
+
+4. PSUBSCRIBE pattern [pattern ...]
+   订阅给定的模式
+
+5. PUNSUBSCRIBE [pattern [pattern ...]]
+   取消订阅先前给定的模式

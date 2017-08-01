@@ -116,6 +116,18 @@ public abstract  class RedisClient {
         return jedis.rpop(key);
     }
 
+
+    /**
+     * 获取list的某段范围的元素
+     * @param key list的key
+     * @param start 开始的位置
+     * @param end 结束的位置
+     * @return 集合
+     */
+    public static List<String> lrange(String key,long start,long end){
+        return jedis.lrange(key,start,end);
+    }
+
     /**
      * 在set集合中添加元素
      * @param key

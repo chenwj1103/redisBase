@@ -75,10 +75,18 @@
 	         type的值：(String，hash，list，set，sorted set)
 	         encoding (raw,int,ht,zipmap,linkedlist,ziplist,intset)
     	     vm字段，只有打开了Redis的虚拟内存功能，此字段才会真正的分配内存，该功能默认是关闭状态的
+
+
+   字符串可以被编码为 raw (常规字符串) 或者int (用字符串表示64位无符号整数这种编码方式是为了节省空间).
+   列表类型可以被编码为ziplist 或者 linkedlist. ziplist 是为了节省较小的列表空间而设计一种特殊编码方式.
+   集合被编码为 intset 或者 hashtable. intset 是为了存储数字的较小集合而设计的一种特殊编码方式.
+   哈希表可以被编码为 zipmap 或者hashtable. zipmap 是专为了较小的哈希表而设计的一种特殊编码方式
+   有序集合被编码为ziplist 或者 skiplist 格式. ziplist可以表示较小的有序集合, skiplist 表示任意大小多的有序集合.
+
 ````
    	String：
    	常用命令：
-	set,get,decr,incr,mget 等。
+	set,get,decr,incr 等。
 
 	应用场景：
 	String是最常用的一种数据类型，普通的key/value存储都可以归为此类。

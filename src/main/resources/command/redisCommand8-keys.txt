@@ -1,0 +1,349 @@
+Keys
+
+
+1. DEL key [key ...]
+    删除key，如果key对应的value元素是String类型的，则复杂度是O（1）；如果存储的
+    value元素是set list zSet类型的，则负责度是O（N），N是集合中元素的个数；
+
+    返回值：
+    返回删除元素的个数
+
+    例子：
+
+    127.0.0.1:6379> set Stringkey test
+    OK
+    127.0.0.1:6379> set Stringkey2 test2
+    OK
+    127.0.0.1:6379> del Stringkey Stringkey2 stringkey3
+    (integer) 2
+
+2.  DUMP key
+    对key进行序列化操作，病返回序列化的值，使用RESTORE命令对值进行反序列化为Redis键
+
+    返回值：
+    如果key不存在，则返回nil，否则返回序列化生成的值
+
+    例子：
+
+    127.0.0.1:6379> set stringKey test
+    OK
+    127.0.0.1:6379> dump stringKey
+    "\x00\x04test\a\x00~\xa2zSd;e_"
+    127.0.0.1:6379> dump stringKey2
+    (nil)
+
+3.  EXISTS key [key ...]
+    判断可以是否存在
+
+    返回值：
+    如果key存在则返回存在key的个数 ，如果可以不存在返回0
+
+    例子：
+    127.0.0.1:6379> exists stringKey
+    (integer) 1
+    127.0.0.1:6379> set stringKey2 test
+    OK
+    127.0.0.1:6379> exists stringKey stringKey2
+    (integer) 2
+
+4. EXPIRE key seconds
+    对key设置超时时间
+    超时后，key将被删除；
+    执行persist命令，可以是key变成一个永久的key；
+    使用RENAME操作key，会使超时间作用于新的key上面；
+    对key执行新的EXPIRE，会刷新key的超时时间
+
+    返回值：
+    设置超时时间成功返回1；
+    如果key不存在或者不能设置超时时间则返回0
+
+    127.0.0.1:6379> expire stringKey 10
+    (integer) 1
+    127.0.0.1:6379> ttl stringKey
+    (integer) 3
+
+
+5. EXPIREAT key timestamp
+    对可以设置超时时间，不过是时间戳，unix timestamp
+
+    返回值：
+    设置了过去时间返回1，如果没有设置超时时间则返回0
+
+    例子：
+    127.0.0.1:6379> expireat mykey 1501261780
+    (integer) 1
+    127.0.0.1:6379> ttl mykey
+    (integer) 55
+
+6. KEYS pattern
+    查找所有给定pattern的key
+
+    返回值：
+    返回符合pattern的key
+
+    例子：
+    127.0.0.1:6379> dbsize
+    (integer) 3
+    127.0.0.1:6379> keys *
+    1) "myekey"
+    2) "stringKey2"
+    3) "myeky"
+
+7. MIGRATE host port key destination-db timeout [COPY] [REPLACE]
+    将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功，
+     key 保证会出现在目标实例上，而当前实例上的 key 会被删除。
+    这个命令是一个原子操作，它在执行的时候会阻塞进行迁移的两个实例，
+    直到以下任意结果发生：迁移成功，迁移失败，等到超时。
+
+
+8.  MOVE key db
+    将当前数据库的 key 移动到给定的数据库 db 当中。
+    如果当前数据库(源数据库)和给定数据库(目标数据库)有相同名字的给定 key ，
+    或者 key 不存在于当前数据库，那么 MOVE 没有任何效果。
+
+    返回值：
+    移动成功返回1 失败返回0
+
+
+
+9.  OBJECT subcommand [arguments [arguments ...]]
+    OBJECT 命令可以在内部调试(debugging)给出keys的内部对象，
+    它用于检查或者了解你的keys是否用到了特殊编码 的数据类型来存储空间
+
+    子命令：
+      OBJECT REFCOUNT 该命令主要用于调试(debugging)，它能够返回指定key所对应value被引用的次数.
+      OBJECT ENCODING 该命令返回指定key对应value所使用的内部表示(representation)(译者注：也可以理解为数据的压缩方式).
+      OBJECT IDLETIME 该命令返回指定key对应的value自被存储之后空闲的时间，以秒为单位(没有读写操作的请求) ，
+      这个值返回以10秒为单位的秒级别时间，这一点可能在以后的实现中改善
+
+    例子：
+    127.0.0.1:6379> lpush mylist hello world
+    (integer) 2
+    127.0.0.1:6379> object refcount mylist
+    (integer) 1
+    127.0.0.1:6379> object encoding mylist
+    "quicklist"
+    127.0.0.1:6379> object idletime mylist
+    (integer) 78
+
+
+10. PERSIST key
+    将key由带有过期时间的key转变成 持久的key
+
+    返回值：
+    当移除返回时间成功 返回1
+    否则返回0
+
+    例子：
+    127.0.0.1:6379> set mykey test EX 100
+    OK
+    127.0.0.1:6379> ttl mykey
+    (integer) 94
+    127.0.0.1:6379> ttl mykey
+    (integer) 93
+    127.0.0.1:6379> persist mykey
+    (integer) 1
+    127.0.0.1:6379> ttl mykey
+    (integer) -1
+
+11. PEXPIRE key milliseconds
+    设置key的超时时间，超时时间为毫秒级的
+
+    返回值：
+    设置成功返回1
+    否则返回0
+
+    例子：
+    127.0.0.1:6379> pexpire mykey 100000
+    (integer) 1
+    127.0.0.1:6379> ttl mykey
+    (integer) 96
+    127.0.0.1:6379> ttl mykey
+    (integer) 95
+    127.0.0.1:6379> ttl mykey
+    (integer) 94
+
+
+12. PEXPIREAT key milliseconds-timestamp
+    设置key的超时时间，是以毫秒为单位的unix时间戳
+
+    返回值：
+    设置成功返回1
+    否则返回0
+
+    例子：
+    127.0.0.1:6379> set mykey test
+    OK
+    127.0.0.1:6379> ttl mykey
+    (integer) -1
+    127.0.0.1:6379> pexpireat mykey 1501329754000
+    (integer) 1
+    127.0.0.1:6379> ttl mykey
+    (integer) 832
+
+
+13. PTTL key
+    返回key的剩余过期时间
+
+    返回值：
+    如果key存在则以毫秒级为单位返回过期时间
+    如果key不存在或者已过期，返回 -2
+    如果key没有设置过期时间（永久有效），返回 -1 。
+
+    例子：
+    127.0.0.1:6379> pttl mykey
+    (integer) 598380
+
+
+14. RANDOMKEY
+    从数据库中随机返回一个key，如果数据库中不存在，则返回nil
+
+    返回值：
+    返回key的值
+
+    例子：
+    127.0.0.1:6379> randomkey
+    "listkey"
+    127.0.0.1:6379> randomkey
+    "myekey"
+
+15. RENAME key newkey
+    将key重命名为newkey，如果key与newkey相同，则返回一个错误；如果newkey已经存在，则值将被覆盖
+
+    返回值：
+    ok
+
+    例子：
+    127.0.0.1:6379> get mykey
+    "test"
+    127.0.0.1:6379> rename mykey testmykey
+    OK
+    127.0.0.1:6379> get testmykey
+    "test"
+
+16. RENAMENX key newkey
+     如果newkey不存在，则将key改名为newkey，当key不存在时，返回一个错误。
+
+     返回值：
+     修改成功返回1，
+     如果newkey已经存在，则返回0
+
+     例子：
+     127.0.0.1:6379> set mykey test
+     OK
+     127.0.0.1:6379> get mykey2
+     "test2"
+     127.0.0.1:6379> renamenx mykey mykey2
+     (integer) 0
+     127.0.0.1:6379> get mykey2
+     "test2"
+
+17.  RESTORE key ttl serialized-value [REPLACE]
+     反序列化给定的序列化值，并将它和给定key关联，参数ttl以毫秒为单位设置生存时间，ttl为0不设置超时时间
+
+     返回值：
+     如果反序列化成功那么返回 OK ，否则返回一个错误。
+
+     例子：
+     127.0.0.1:6379> RESTORE mykey 0 "\n\x17\x17\x00\x00\x00\x12\x00\x00\x00\x03\x00\x00\xc0\x01\x00\x04\xc0\x02\x00\x04\xc0\x03\x00\xff\x04\x00u#<\xc0;.\xe9\xdd"
+     OK
+     127.0.0.1:6379> type mykey
+     list
+     127.0.0.1:6379> lrange mykey 0 -1
+     1) "1"
+     2) "2"
+     3) "3"
+
+18. SCAN cursor [MATCH pattern] [COUNT count]
+    基于游标的迭代器，每次迭代需要使用上次返回的游标。当scan命令的游标为0时，服务器开始一次新的迭代；当迭代返回0的游标时，
+    表示迭代已经结束
+
+    scan操作保证，如果一个元素一直在被遍历的集合中，则该元素一定会被返回给用户；
+    COUNT默认值为10
+
+    在迭代一个编码为整数集合（intset，一个只由整数值构成的小集合）、 或者编码为压缩列表（ziplist，由不同值构成的一个小哈希或者一个小有序集合）时，
+    增量式迭代命令通常会无视 COUNT 选项指定的值， 在第一次迭代就将数据集包含的所有元素都返回给用户
+
+    返回值：
+    返回迭代的游标 和迭代返回的元素集合
+
+    例子：
+
+    127.0.0.1:6379> hmset hashkey name chen age 28 city beijing
+    OK
+    127.0.0.1:6379> hscan hashkey 0
+    1) "0"
+    2) 1) "name"
+       2) "chen"
+       3) "age"
+       4) "28"
+       5) "city"
+       6) "beijing"
+    127.0.0.1:6379> scan 0
+    1) "0"
+    2) 1) "myekey"
+       2) "mykey"
+       3) "hashkey"
+       4) "myeky"
+       5) "mylist"
+       6) "stringKey2"
+       7) "listkey"
+       8) "mykey2"
+
+19. SORT key [BY pattern] [LIMIT offset count] [GET pattern] [ASC|DESC] [ALPHA] destination
+    返回或存储key的list、 set 或sorted set 中的元素。默认是按照数值类型排序的，并且按照两个元素的双精度浮点数类型值进行比较
+    假如是数字列表，返回一个元素从小到大排序的相同大小列表；
+    当 mylist 包含的是字符串值并且需要按照字典顺序排序，可以使用 ALPHA 修饰；
+    可以使用Limit offset count指定从offset位置返回count个元素
+
+    例子：
+    127.0.0.1:6379> lrange mykey 0 -1
+    1) "5"
+    2) "1"
+    3) "2"
+    4) "3"
+    127.0.0.1:6379> sort mykey
+    1) "1"
+    2) "2"
+    3) "3"
+    4) "5"
+
+20. TTL key
+    返回key剩余的超时时间
+
+    返回值：
+    如果key不存在或者已过期 返回-2
+    如果key没有设置过期时间，则返回-1
+
+    例子：
+    127.0.0.1:6379> expire mykey 100
+    (integer) 1
+    127.0.0.1:6379> ttl mykey
+    (integer) 92
+
+21. TYPE key
+    返回key所存储的数据类型
+
+    返回值：
+    key存储的数据类型
+    当key不存在时，返回none
+
+    例子：
+    127.0.0.1:6379> keys *
+    1) "myekey"
+    2) "stringKey2"
+    3) "hashkey"
+    4) "listkey"
+    5) "myeky"
+    6) "mylist"
+    7) "mykey2"
+    127.0.0.1:6379> type hashkey
+    hash
+    127.0.0.1:6379> type testType
+    none
+
+22. WAIT numslaves timeout
+    此命令阻塞当前客户端，直到所有以前的写命令都成功的传输和指定的slaves确认。
+    如果超时，指定以毫秒为单位，即使指定的slaves还没有到达，命令任然返回
+
+
