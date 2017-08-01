@@ -105,80 +105,57 @@ mem_allocator:jemalloc-4.0.3
 
 #HASH的内存优化实例
 
-1)条件：
-   hash-max-ziplist-entries  > 512 (520)
-   hash-max-ziplist-value >64(70)
+    数据：
+    dbsize：10000
+    entries: 515
+    values:70
 
-   dbsize:  49998
+    结构：
 
-   key :mapKey:688631424
-   filed:test key length ,need length is gt 64 byte.it is too large ll688631876
-   value:test key length ,need length is gt 64 byte.it is too large ll688631876
-
-   127.0.0.1:6379> hlen mapKey:688631424
-   (integer) 520
+    “mapKey:474006796”：{
+    "474006830"：“test key length ,need length is 64 byte.it is too much long  474006830”，
+    "474007246": "test key length ,need length is 64 byte.it is too much long  474007246"
+    }
 
 
-   used_memory_human:5.81G
+1) 条件：
+   hash-max-ziplist-entries  512
+   hash-max-ziplist-value  64
 
+   结果：
+   used_memory_human:866.18M
    object encoding :hashtable
 
 
 2) 条件：
-   hash-max-ziplist-entries  < 512 (500)
-   hash-max-ziplist-value >64(70)
+   hash-max-ziplist-entries  520
+   hash-max-ziplist-value  64
 
-   dbsize:  50000
-
-   key :mapKey:887468809
-   filed:test key length ,need length is gt 64 byte.it is too large ll887469058
-   value:test key length ,need length is gt 64 byte.it is too large ll887469058
-
-   127.0.0.1:6379> hlen mapKey:887468809
-   (integer) 500
-
-   used_memory_human:5.23G
-
+   结果：
+   used_memory_human:866.18M
    object encoding :hashtable
-
 
 
 3) 条件：
-   hash-max-ziplist-entries  > 512 (520)
-   hash-max-ziplist-value <64(60)
+  hash-max-ziplist-entries  512
+  hash-max-ziplist-value  75
 
-   dbsize:   49998
-
-   key :mapKey:117573535
-   filed:test key length ,need length is gt 64 byte.it is to117573833
-   value:test key length ,need length is gt 64 byte.it is to117573833
-
-    127.0.0.1:6379> hlen mapKey:117573535
-    (integer) 520
-
-   used_memory_human:3.40G
-
-   object encoding :hashtable
+  结果：
+  used_memory_human:785.43M
+  object encoding :hashtable
 
 
 4) 条件：
-   hash-max-ziplist-entries  < 512 (500)
-   hash-max-ziplist-value <64(60)
+ hash-max-ziplist-entries  520
+ hash-max-ziplist-value  75
 
-   dbsize:   49999
-
-   key :mapKey:524737234
-   filed:test key length ,need length is gt 64 byte.it is to524737494
-   value:test key length ,need length is gt 64 byte.it is to524737494
-
-   127.0.0.1:6379> hlen mapKey:524737234
-   (integer) 500
-
-   used_memory_human:3.06G
-
-   object encoding :ziplist
+ 结果：
+ used_memory_human:392.16M
+ object encoding :ziplist
 
 总结：
+    1和4对比 减少了 474.02M   120.87%
+
 
 
 
@@ -224,128 +201,123 @@ mem_allocator:jemalloc-4.0.3
 
 
 
-Set的内存优化实例()
-
-1)set-max-intset-entries >512  (520) 存储的数据是包含符号位 64位的10进制的整数类型的字符串
-
-     dbsize:   200
-
-     key :setKey:20444404
-     127.0.0.1:6379> scard setKey:20444404
-     (integer) 520
-     used_memory_human:6.40M
-     object encoding :hashtable
-
-2)set-max-intset-entries <512  (500)
-
-     dbsize:   200
-     key :setKey:50383508
-     127.0.0.1:6379> scard setKey:50383508
-     (integer) 500
-
-     used_memory_human:1.22M
-
-     object encoding :intset
-
-3)set-max-intset-entries >512  (520)  存的是字符串加了一个t
-
-     dbsize:   200
-
-     key :setKey:85731004
-     127.0.0.1:6379> scard setKey:85731004
-     (integer) 520
-     used_memory_human:8.74M
-     object encoding :hashtable
+Set的内存优化实例
 
 
+    数据1：
+    dbsize：200
+    entries: 520
 
-4)set-max-intset-entries >512  (520)  存的是字符串加了一个t
+    结构：
 
-     dbsize:   200
+    “setKey:474006796”：{
+        “51456284”，
+        “51456367”，
+        “51456116”，
+        “51456178”
+    }
 
-     key :setKey:86662222
-     127.0.0.1:6379> scard setKey:86662222
-     (integer) 500
-     used_memory_human:6.98M
-     object encoding :hashtable
+
+1) 条件：
+   set-max-intset-entries ：512
+
+   结果：
+   used_memory_human:6.39M
+   object encoding :hashtable
+
+2) 条件：
+   set-max-intset-entries ：530
+
+   结果：
+   used_memory_human:1.30M
+   object encoding :intset
+
+
+1和2对比 内存减少了 5.09M  占391.5%
+
+
+    数据2：
+    dbsize：200
+    entries: 520
+
+    结构：
+
+    “setKey:474006796”：{
+        “9361286t”，
+        “9361037t”，
+        “9360982t”，
+        “9360949t”
+    }
+
+1) 条件：
+   set-max-intset-entries ：512
+
+   结果：
+   used_memory_human:8.73M
+   object encoding :hashtable
+
+2) 条件：
+   set-max-intset-entries ：530
+
+   结果：
+   used_memory_human:8.73M
+   object encoding :hashtable
+
 
 
 
 
 zSet的内存优化实例
 
- 1)    zset-max-ziplist-entries  >128 （130）
-       zset-max-ziplist-value >64 （70）
 
 
-   dbsize:   1000
+    数据：
+    dbsize：1000
+    entries: 140
+    values:70
 
-   key :zaddKey:4158812
+    结构：
 
-   member:test key length ,need length is gt 64 byte.it is too large ll4158923
-   score:0.023705493968210201
+    “zaddKey:86423545”：
+        “test key length ,need length is gt 64 byte.it is too large ll86423614”，    0.97933775990216543
+        “test key length ,need length is gt 64 byte.it is too large ll86423678”，    0.98476398325408232
+        “test key length ,need length is gt 64 byte.it is too large ll86423547”，    0.99646509991322085
+    }
 
-    127.0.0.1:6379> zcard zaddKey:4158812
-    (integer) 130
 
-   used_memory_human:25.12M
+1) 条件：
+   zset-max-ziplist-entries 128
+   zset-max-ziplist-value  64
 
+   结果：
+   used_memory_human:26.68M
    object encoding :skiplist
 
+2) 条件：
+  zset-max-ziplist-entries 150
+  zset-max-ziplist-value  64
 
-2)    zset-max-ziplist-entries  <128 （120）
-      zset-max-ziplist-value >64 （70）
+   结果：
+   used_memory_human:26.69M
+   object encoding :skiplist
 
-       dbsize:   1000
+3) 条件：
+    zset-max-ziplist-entries 128
+    zset-max-ziplist-value  80
 
-       key :zaddKey:83824178
+  结果：
+  used_memory_human:26.67M
+  object encoding :skiplist
 
-       member:test key length ,need length is gt 64 byte.it is too large ll83824238
-       score:0.0054909356620924665
+4) 条件：
+  zset-max-ziplist-entries 150
+  zset-max-ziplist-value  80
 
-        127.0.0.1:6379> zcard zaddKey:83824178
-        (integer) 120
+  结果：
+  used_memory_human:14.54M
+  object encoding :ziplist
 
-       used_memory_human:21.58M
-
-       object encoding :skiplist
-
-
-3)   zset-max-ziplist-entries  >128 （130）
-     zset-max-ziplist-value <64 （60）
-
-       dbsize:   1000
-
-       key :zaddKey:21401026
-
-       member:test key length ,need length is gt 64 byte.it is to21401073
-       score:0.0075969902614139162
-
-        127.0.0.1:6379> zcard zaddKey:4158812
-        (integer) 130
-
-       used_memory_human:23.14M
-
-       object encoding :skiplist
-
-
-4)  zset-max-ziplist-entries  <128 （120）
-    zset-max-ziplist-value <64 （60）
-
-       dbsize:   1000
-
-       key :zaddKey:51080267
-
-       member:test key length ,need length is gt 64 byte.it is to51080298
-       score:0.0082274075888735254
-
-        127.0.0.1:6379> zcard zaddKey:51080267
-        (integer) 120
-
-       used_memory_human:10.65M
-
-       object encoding :ziplist
-
+ 1和4 对比 减少了 12.14M 占 83.5%
 
 
  ```

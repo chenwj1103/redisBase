@@ -1,3 +1,5 @@
+package com.ifeng.test;
+
 /**
  * Created by Chen Weijie on 2017/7/23.
  */
