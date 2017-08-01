@@ -16,7 +16,7 @@ public class TestBinary {
 
         String str ="testKeyLength++zaddKey测试占用内存空间大小，字节长度";
         System.out.println(str.getBytes().length);
-
+        System.out.println("test");
 
 
     }
